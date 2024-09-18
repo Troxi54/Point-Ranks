@@ -102,6 +102,7 @@ $(document).ready(function() {
   fixValues();
 
   player.points.forEach(()=>{gameFunctions.add_point_layer(!player.points.length)});
+  if (!player.points.length) gameFunctions.add_point_layer();
   updates.updateAll();
 
   setInterval(mainLoop, getLoopInterval());
