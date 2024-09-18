@@ -1,0 +1,114 @@
+* {
+  font-family: sans-serif;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(0, 0, 0);
+  overflow: auto;
+}
+
+div {
+  display: flex;
+}
+
+p {
+  color: white;
+  pointer-events: none;
+}
+
+*::before, *::after {
+  width: 100%;
+  height: 100%;
+}
+
+.no-transition {
+  transition: none !important;
+}
+
+.text-gradient {
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+.size-175 {
+  font-size: 175%;
+}
+.size-150 {
+  font-size: 150%;
+}
+.size-125 {
+  font-size: 125%;
+}
+.size-75 {
+  font-size: 75%;
+}
+.size-50 {
+  font-size: 50%;
+}
+.bold {
+  font-weight: bold;
+}
+
+.points {
+  font-size: 100%;
+}
+
+#wrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+#main-content {
+  width: 100%;
+  height: 100%;
+}
+
+#points-div {
+  width: 100%;
+  height: 100%;
+}
+
+#points-container {
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  font-size: 3em;
+  display: inline-block;
+  padding-top: 2.5%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#points-container * {
+  clear: both;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  margin-left: 0.1%;
+  margin-right: 0.1%;
+  display: inline-block;
+}
+
+#time {
+  position: absolute;
+  font-size: 2em;
+  bottom: 1%;
+  right: 5%;
+  margin: 0;
+}
