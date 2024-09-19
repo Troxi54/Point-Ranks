@@ -1,4 +1,4 @@
-const x = (n)=>new Decimal(n);
+const x = n=>new Decimal(n);
 function floor(num, acc) { return Math.floor(num * 10 ** acc) / 10 ** acc; }
 
 function abb(num, acc = 2, absolute = false) {

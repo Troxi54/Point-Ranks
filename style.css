@@ -57,6 +57,10 @@ p {
   font-weight: bold;
 }
 
+.dark {
+  color: #999;
+}
+
 .points {
   font-size: 100%;
 }

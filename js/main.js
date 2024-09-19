@@ -11,6 +11,7 @@ let [player, nosave] = [{}, {}];
 function getDefaultPlayerValues() {
   let Player = {};
   Player.points = [];
+  Player.pmt = x(1);
   Player.firstVisit = Date.now();
 
   return Player;
@@ -49,12 +50,12 @@ main_functions = {
           [r, r2, g, g2, b, b2] = [Math.floor(r), Math.floor(r2), Math.floor(g), Math.floor(g2), Math.floor(b), Math.floor(b2)];
           const preword = rankNames?.[index] || index;
           this.update($($('#points-container').children()[index]), 
-                      `<span class="text-gradient" style="background: linear-gradient(rgb(${r}, ${g}, ${b}), rgb(${r2}, ${g2}, ${b2}))">${preword} Points: ${abb_int(value)}</span>`)
+                      `<span class="text-gradient" style="background: linear-gradient(rgb(${r}, ${g}, ${b}), rgb(${r2}, ${g2}, ${b2}))">${preword} Points: ${abb_int(value)}</span>`);
         }
       });
     },
     time() {
-      this.update($('#time'), `${msToTime(Date.now() - player.firstVisit)}`);
+      this.update($('#time'), `${player.pmt.gt(1) ? `<span class="dark">${abb(player.pmt, 3)}x</span>` : ''}<br> ${msToTime(Date.now() - player.firstVisit)}`);
     },
     updateAll() {
       for (const upd in updates) {
@@ -76,7 +77,10 @@ updates = main_functions.updates;
 gameFunctions = main_functions.gameFunctions;
 
 function mainLoop() {
-  player.points[0] = player.points[0].plus(x(1).plus(player.points.length >= 2 ? player.points[1] : 0).div(settings.fps));
+  const time = (Date.now() - player.firstVisit);
+  player.pmt = time > 3600000 ? x(3).pow(x(time).div(3600000).log(10)) : x(1);
+
+  player.points[0] = player.points[0].plus(x(1).plus(player.points.length >= 2 ? player.points[1] : 0).div(settings.fps).times(player.pmt));
   player.points.forEach((value, index) => {
     const req = x(10).pow(index + 1);
     if (player.points[index].gte(req)) {
@@ -84,7 +88,7 @@ function mainLoop() {
       if (index === player.points.length - 1) {
         gameFunctions.add_point_layer();
       }
-      player.points[index + 1] = player.points[index + 1].plus(x(1).plus(index < player.points.length - 2 ? player.points?.[index + 2] : 0));
+      player.points[index + 1] = player.points[index + 1].plus(x(1).plus(index < player.points.length - 2 ? player.points?.[index + 2] : 0).times(player.pmt));
     }
   })
   updates.updateAll();
