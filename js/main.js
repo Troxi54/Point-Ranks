@@ -78,7 +78,7 @@ gameFunctions = main_functions.gameFunctions;
 
 function mainLoop() {
   const time = (Date.now() - player.firstVisit);
-  player.pmt = time > 3600000 ? x(3).pow(x(time).div(3600000).log(10)) : x(1);
+  player.pmt = time > 3600000 ? x(1.25).pow(x(time).div(3600000).log(10)) : x(1);
 
   player.points[0] = player.points[0].plus(x(1).plus(player.points.length >= 2 ? player.points[1] : 0).div(settings.fps).times(player.pmt));
   player.points.forEach((value, index) => {
