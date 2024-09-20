@@ -12,6 +12,7 @@ function getDefaultPlayerValues() {
   let Player = {};
   Player.points = [];
   Player.pmt = x(1);
+  Player.pfnr = x(0);
   Player.firstVisit = Date.now();
 
   return Player;
@@ -57,6 +58,9 @@ main_functions = {
     time() {
       this.update($('#time'), `${player.pmt.gt(1) ? `<span class="dark">${abb(player.pmt, 3)}x</span>` : ''}<br> ${msToTime(Date.now() - player.firstVisit)}`);
     },
+    rank() {
+      this.update($('#rank'), `For next rank: ${abb_int(player.pfnr)}`);
+    },
     updateAll() {
       for (const upd in updates) {
         if (!['update', 'updateAll'].includes(upd)) updates[upd]();
@@ -78,11 +82,12 @@ gameFunctions = main_functions.gameFunctions;
 
 function mainLoop() {
   const time = (Date.now() - player.firstVisit);
-  player.pmt = time > 3600000 ? x(1.25).pow(x(time).div(3600000).log(10)) : x(1);
+  player.pmt = time > 3600000 ? x(3).pow(x(time).div(3600000).log(10)) : x(1);
 
   player.points[0] = player.points[0].plus(x(1).plus(player.points.length >= 2 ? player.points[1] : 0).div(settings.fps).times(player.pmt));
   player.points.forEach((value, index) => {
-    const req = x(10).pow(index + 1);
+    const req = x(x(10).minus(x(index - 4).max(0)).max(5)).pow(index + 1);
+    if (index === player.points.length - 1) player.pfnr = req;
     if (player.points[index].gte(req)) {
       player.points[index] = player.points[index].minus(req);
       if (index === player.points.length - 1) {

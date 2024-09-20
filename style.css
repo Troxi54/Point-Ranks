@@ -116,3 +116,11 @@ body {
   right: 5%;
   margin: 0;
 }
+
+#rank {
+  position: absolute;
+  font-size: 2em;
+  bottom: 1%;
+  left: 5%;
+  margin: 0;
+}

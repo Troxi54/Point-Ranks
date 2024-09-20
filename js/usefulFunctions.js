@@ -9,9 +9,10 @@ function abb(num, acc = 2, absolute = false) {
     if (num.eq("0")) {
         return "0";
     } else if (num.lt("1e3")) {
+        if (!acc) return num.floor().toNumber().toFixed(acc);
         return num.toNumber().toFixed(acc);
     } else if (num.lt("1e6")) {
-        return num.toNumber().toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num.floor().toNumber().toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     } else if (num.lt(x(1e3).pow(abbs.length))) {
         const log = num.log(1e3).abs().floor();
         const numm = num.div(Decimal.pow(1e3, log));
