@@ -23,7 +23,8 @@ function setNosaveValues() {
 }
 
 const rankNames = [' ', 'Super', 'Mega', 'Ultra', 'Omega', 'Extreme', 'Insane', 'Void', 'Impossible', 'Royal', 'Divine', 'Epic', 'Legendary', 'Mythical', 
-                   'Unique', 'Colossal', 'Grand', 'Exotic', 'Ethereal'];
+                   'Unique', 'Colossal', 'Grand', 'Exotic', 'Ethereal', 'Crazy', 'Mysterious', 'Cosmic', 'Brilliant', 'Astonishing', 'Delightful',
+                   'Copacetic'];
 
 main_functions = {
   updates: {  // update HTML
@@ -59,7 +60,7 @@ main_functions = {
       this.update($('#time'), `${player.pmt.gt(1) ? `<span class="dark">${abb(player.pmt, 3)}x</span>` : ''}<br> ${msToTime(Date.now() - player.firstVisit)}`);
     },
     rank() {
-      this.update($('#rank'), `For next rank: ${abb_int(player.pfnr)}`);
+      this.update($('#rank'), `For next rank: <span class="size-150">${abb_int(player.pfnr)}</span>`);
     },
     updateAll() {
       for (const upd in updates) {
@@ -86,7 +87,7 @@ function mainLoop() {
 
   player.points[0] = player.points[0].plus(x(1).plus(player.points.length >= 2 ? player.points[1] : 0).div(settings.fps).times(player.pmt));
   player.points.forEach((value, index) => {
-    const req = x(x(10).minus(x(index - 4).max(0)).max(5)).pow(index + 1);
+    const req = x(10).pow(x(index + 1).min(5)).times(x(2).pow(x(index - 4).max(0))).softcap('1e7', 0.5, 'pow').softcap('1e8', 0.5, 'pow');
     if (index === player.points.length - 1) player.pfnr = req;
     if (player.points[index].gte(req)) {
       player.points[index] = player.points[index].minus(req);
