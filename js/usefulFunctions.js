@@ -278,3 +278,31 @@ function msToTime(s) {
           + (hrs || mins ? (mins + 'm. ') : '')
           + secs + 's. ';
 }
+
+let textFile = null,
+makeTextFile = function(text) 
+{
+    var data = new Blob([text], {type: 'text/plain'});
+    if (textFile !== null) {
+        window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+
+    return textFile;
+},
+downloadFile = function(text, filename)
+{
+  const link = document.createElement('a')
+
+  link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
+  link.setAttribute('download', filename || 'data.json')
+  link.style.display = 'none'
+
+  document.body.appendChild(link)
+
+  link.click()
+
+  document.body.removeChild(link)
+  link.remove();
+}

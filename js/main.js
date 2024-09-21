@@ -1,10 +1,11 @@
+"use strict";
 const settings = {
   game_name: "PointRanks",
   savefile_name: "PointRanksSave",
   save: true,
   auto_save: 10,
   fps: 60
-}
+};
 
 let [player, nosave] = [{}, {}];
 
@@ -26,7 +27,7 @@ const rankNames = [' ', 'Super', 'Mega', 'Ultra', 'Omega', 'Extreme', 'Insane', 
                    'Unique', 'Colossal', 'Grand', 'Exotic', 'Ethereal', 'Crazy', 'Mysterious', 'Cosmic', 'Brilliant', 'Astonishing', 'Delightful',
                    'Copacetic'];
 
-main_functions = {
+const main_functions = {
   updates: {  // update HTML
     update(element, text) {
       if (element.html() !== text) element.html(text);
@@ -41,7 +42,7 @@ main_functions = {
             SimpleFastCounter32(MurmurHash3(`b${index} ${code}`)())() * 255];
           [r, g, b] = [Math.floor(r), Math.floor(g), Math.floor(b)];
           const preword = rankNames?.[index] || index;
-          this.update($($('#points-container').children()[index]), `<span style="color: rgb(${r}, ${g}, ${b})">${preword} Points: ${abb_int(value)}</span>`)
+          this.update($($('#points-container').children()[index]), `<span style="color: rgb(${r}, ${g}, ${b})">${preword} Points: ${abb_int(value)}</span>`);
         } else {
           let [r, r2, g, g2, b, b2] = [SimpleFastCounter32(MurmurHash3(`r${index} ${code}`)())() * 255, 
             SimpleFastCounter32(MurmurHash3(`r-2 ${index} ${code}`)())() * 255,
@@ -77,9 +78,9 @@ main_functions = {
   }
 };
 
-get = main_functions.get;
-updates = main_functions.updates;
-gameFunctions = main_functions.gameFunctions;
+const get = main_functions.get;
+const updates = main_functions.updates;
+const gameFunctions = main_functions.gameFunctions;
 
 function mainLoop() {
   const time = (Date.now() - player.firstVisit);
@@ -87,7 +88,7 @@ function mainLoop() {
 
   player.points[0] = player.points[0].plus(x(1).plus(player.points.length >= 2 ? player.points[1] : 0).div(settings.fps).times(player.pmt));
   player.points.forEach((value, index) => {
-    const req = x(10).pow(x(index + 1).min(5)).times(x(2).pow(x(index - 4).max(0))).softcap('1e7', 0.5, 'pow').softcap('1e8', 0.5, 'pow');
+    const req = x(10).pow(x(index + 1).min(5)).times(x(2).pow(x(index - 4).max(0))).softcap('5e6', 0.5, 'pow').softcap('1e8', 0.5, 'pow');
     if (index === player.points.length - 1) player.pfnr = req;
     if (player.points[index].gte(req)) {
       player.points[index] = player.points[index].minus(req);
@@ -96,7 +97,7 @@ function mainLoop() {
       }
       player.points[index + 1] = player.points[index + 1].plus(x(1).plus(index < player.points.length - 2 ? player.points?.[index + 2] : 0).times(player.pmt));
     }
-  })
+  });
   updates.updateAll();
   if (Date.now() >= nosave.lastSave + settings.auto_save * 1e3) {
     save();
@@ -105,11 +106,28 @@ function mainLoop() {
   
 }
 
-$(document).ready(function() {
+$(window).on('load', () => {
   setNosaveValues();
   player = getDefaultPlayerValues();
   loadToPlayer();
   fixValues();
+
+  $('#export').on('click', () => {
+    const save = localStorage.getItem(settings.game_name),
+              date = new Date(),
+              post_name = date.toLocaleDateString() + ' ' + date.toLocaleTimeString().replace(new RegExp(':', 'g'), '-');
+    downloadFile(save, settings.savefile_name + ' ' + post_name + '.txt');
+  });
+
+  $('#import').on('click', () => {
+    const text = prompt('Paste your text here. Your current save will be overwritten.');
+    if (text) {
+      player = getDefaultPlayerValues();
+      loadToPlayer(text);
+      save();
+      location.reload();
+    }
+  });
 
   player.points.forEach(()=>{gameFunctions.add_point_layer(!player.points.length)});
   if (!player.points.length) gameFunctions.add_point_layer();

@@ -113,18 +113,57 @@ body {
   display: inline-block;
 }
 
-#time {
-  position: absolute;
+#time, #rank {
   font-size: 2em;
   bottom: 1%;
   right: 5%;
   margin: 0;
 }
 
+#time {
+  margin-top: auto
+}
+
 #rank {
   position: absolute;
   font-size: 1.5em;
-  bottom: 1%;
   left: 5%;
+  right: auto;
+}
+
+#right-bottom {
+  width: fit-content;
+  height: fit-content;
+  position: absolute;
+  right: 1%;
+  bottom: 1%;
+  gap: 30px;
+}
+
+#buttons {
+  width: fit-content;
+  height: fit-content;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#buttons > * {
+  background: linear-gradient(#222, black);
+  width: 50px;
+  aspect-ratio: 1 / 1;
+  border: 2px solid white;
+  transition: border 100ms linear;
+  cursor: pointer;
+}
+
+#buttons > *:hover {
+  border-bottom-width: 5px;
+}
+
+#buttons > * * {
+  font-family: serif;
+  font-weight: bold;
+  font-size: 2em;
   margin: 0;
+  color: white;
 }
