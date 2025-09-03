@@ -3,3 +3,4 @@ js/utils.js
 js/style.css
 original.html
 .prettierignore
+.vscode/
