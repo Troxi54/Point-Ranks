@@ -1,2 +1,5 @@
 js/main.js
-js/usefulFunctions.js
+js/utils.js
+js/style.css
+original.html
+.prettierignore

@@ -1,0 +1,265 @@
+* {
+  font-family: sans-serif;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(0, 0, 0);
+  overflow: auto;
+}
+
+div {
+  display: flex;
+}
+
+p {
+  color: white;
+  pointer-events: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+h4 {
+  display: inline-block;
+}
+
+button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+*::before,
+*::after {
+  width: 100%;
+  height: 100%;
+}
+
+.no-transition {
+  transition: none !important;
+}
+
+.text-gradient {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.size-175 {
+  font-size: 175%;
+}
+.size-150 {
+  font-size: 150%;
+}
+.size-125 {
+  font-size: 125%;
+}
+.size-75 {
+  font-size: 75%;
+}
+.size-50 {
+  font-size: 50%;
+}
+.bold {
+  font-weight: bold;
+}
+
+.dark {
+  color: #999;
+}
+
+.points {
+  font-size: 100%;
+}
+
+#wrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+#main-content {
+  width: 100%;
+  height: 100%;
+}
+
+#points-container {
+  position: absolute;
+  top: 0;
+  background-color: transparent;
+  width: 100%;
+  font-size: 3em;
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 2.5%;
+  gap: 0.75em 2em;
+  padding-right: 2%;
+  padding-left: 2%;
+  align-content: start;
+}
+
+#points-container::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 6em;
+}
+
+#points-container * {
+  margin: 0;
+}
+
+#right-bottom,
+#info-container {
+  bottom: 1%;
+}
+
+#time {
+  margin-top: auto;
+  right: 5%;
+  margin: 0;
+  margin-top: auto;
+  font-size: 2em;
+}
+
+#info-container {
+  position: fixed;
+  left: 5%;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+#info-container > p {
+  margin: 0;
+}
+
+#rank {
+  font-size: 1.5em;
+}
+
+#next-feature {
+  font-size: 0.9em;
+  color: #666666;
+}
+
+#right-bottom {
+  width: fit-content;
+  height: fit-content;
+  position: fixed;
+  right: 1.5%;
+  gap: 30px;
+}
+
+#buttons {
+  width: fit-content;
+  height: fit-content;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#buttons > * {
+  display: flex;
+  background: linear-gradient(#222, black);
+  width: 50px;
+  aspect-ratio: 1 / 1;
+  border: 2px solid white;
+  transition: border 100ms linear;
+  font-size: 1.75em;
+}
+
+#buttons > *:hover {
+  border-bottom-width: 5px;
+}
+
+#buttons > * * {
+  font-family: serif;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+}
+
+#unpointify {
+  position: relative;
+  width: 15em;
+  height: fit-content;
+  padding: 1em;
+  background-image: linear-gradient(#222, black);
+  border: 2px solid white;
+  border-radius: 2em;
+  transition: border-top-width 100ms linear, box-shadow 100ms linear;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  align-self: flex-end;
+  overflow: hidden;
+  box-shadow: 0 0 0em 0em rgb(255, 255, 255, 0.4);
+}
+
+#unpointify::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgb(255, 255, 255, 0);
+  transition: background-color 100ms linear;
+}
+
+#unpointify:hover {
+  border-top-width: 5px;
+  box-shadow: 0 0 0.9em 0.05em rgb(255, 255, 255, 0.4);
+}
+
+#unpointify:hover::before {
+  background-color: rgb(255, 255, 255, 0.05);
+}
+
+#unpointify p {
+  margin: 0;
+  pointer-events: none;
+  text-wrap: balance;
+}
+
+#unpointify-title {
+  font-size: 1.5em;
+}
+
+#unpointify-description {
+  color: rgb(129, 129, 129);
+  font-size: 0.8em;
+}
+
+@keyframes animated-gradient {
+  0% {
+    background-position: calc(var(--d) / sin(var(--angle))) 0;
+  }
+}
+
+.animated-gradient {
+  --d: 10em;
+  --angle: 90deg;
+
+  background-size: calc(var(--d) / sin(var(--angle))) 100%;
+  animation: animated-gradient 4s linear infinite;
+  will-change: background-position;
+}

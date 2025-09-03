@@ -1,0 +1,290 @@
+const x = (n) => new Decimal(n);
+function floor(num, acc) {
+  return Math.floor(num * 10 ** acc) / 10 ** acc;
+}
+
+function abb(num, acc = 2, absolute = false) {
+  num = x(num);
+  if (absolute && num.lt(x("0e0"))) num = x("0e0");
+  const abbs = [
+    "",
+    "k",
+    "M",
+    "B",
+    "T",
+    "Qd",
+    "Qn",
+    "Sx",
+    "Sp",
+    "Oc",
+    "No",
+    "Dc",
+    "Ud",
+    "Dd",
+    "Td",
+    "Qad",
+    "Qid",
+    "Sxd",
+    "Spd",
+    "Ocd",
+    "Nd",
+    "Vg",
+    "Uvg",
+    "Dvg",
+    "Tvg",
+    "Qavg",
+    "Qivg",
+    "Sxvg",
+    "Spvg",
+    "Ocvg",
+    "Nvg",
+    "Tg",
+  ];
+  if (num.eq("0")) {
+    return "0";
+  } else if (num.lt("1e3")) {
+    if (!acc) return num.floor().toNumber().toFixed(acc);
+    return num.toNumber().toFixed(acc);
+  } else if (num.lt("1e6")) {
+    return num
+      .floor()
+      .toNumber()
+      .toFixed(0)
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  } else if (num.lt(x(1e3).pow(abbs.length))) {
+    const log = num.log(1e3).abs().floor();
+    const numm = num.div(Decimal.pow(1e3, log));
+    return numm.toFixed(3 - +numm.log(10).floor()) + abbs[log.toNumber()];
+  } else if (num.lt("ee6")) {
+    let exp = num.log10();
+    exp = exp.plus(exp.div(1e9)).floor();
+    return num.div(x(10).pow(exp)).toNumber().toFixed(2) + "e" + abb(exp, 0);
+  } else if (num.lt("eeee10")) {
+    return "e" + abb(num.log10(), acc);
+  } else {
+    return "F" + abb(num.slog(10), acc);
+  }
+}
+
+function abb_int(num) {
+  return abb(num, 0);
+}
+
+function abb_abs(num) {
+  return abb(num, undefined, true);
+}
+
+function abb_abs_int(num) {
+  return abb(num, 0, true);
+}
+
+function save() {
+  nosave.lastSave = Date.now();
+
+  if (!settings.save) return;
+  if (JSON.stringify(player) === JSON.stringify(getDefaultPlayerValues()))
+    return;
+
+  let Player = {};
+  for (const prop in player) Player[prop] = player[prop];
+  for (let prop in Player) {
+    if (Player[prop] instanceof Decimal) {
+      Player[prop] = Player[prop].toString();
+    }
+  }
+  localStorage.setItem(settings.game_name, btoa(JSON.stringify(Player)));
+  console.log("Succesfully saved");
+}
+
+function load(data = localStorage.getItem(settings.game_name)) {
+  let isValid = false;
+  try {
+    JSON.parse(data);
+    isValid = true;
+  } catch {
+    isValid = false;
+  }
+  if (isValid) {
+    save();
+    data = btoa(data);
+  }
+  if (data) {
+    data = JSON.parse(atob(data));
+    for (let p in data) {
+      if (data.hasOwnProperty(p)) {
+        if (typeof data[p] === "string") {
+          if (data[p].includes("e") || /\d/.test(data[p])) {
+            const value = x(data[p]).toNumber();
+            if (value != NaN && value != undefined) {
+              data[p] = x(data[p]);
+            } else {
+              console.warn(`Load value failed: value is ${value} for ${p}`);
+            }
+          }
+        }
+        if (p === "points") {
+          for (let pt in data.points) {
+            data.points[pt] = x(data.points[pt]);
+          }
+        }
+      }
+    }
+  }
+  return data;
+}
+
+function loadToPlayer(data_) {
+  let data = load(data_);
+  if (data) {
+    for (let property in data) {
+      player[property] = data[property];
+    }
+  }
+}
+
+function fixValues() {
+  for (let property in player) {
+    if (player[property] instanceof Decimal) {
+      if (player[property].isNan()) {
+        player[property] = x(0);
+      } else if (player[property].lt(0)) {
+        player[property] = x(0);
+      }
+    }
+  }
+  for (let cont in player.upgrades) {
+    player.upgrades[cont].forEach(function (upg) {
+      if (upg.bought_times.gt(upg.buyable_times))
+        upg.bought_times = upg.buyable_times;
+    });
+  }
+}
+
+function getLoopInterval() {
+  return 1e3 / settings.fps;
+}
+
+// taken from: https://www.delftstack.com/howto/javascript/javascript-random-seed-to-generate-random/
+// {
+function MurmurHash3(string) {
+  let i = 0;
+  for (i, hash = 1779033703 ^ string.length; i < string.length; i++) {
+    let bitwise_xor_from_character = hash ^ string.charCodeAt(i);
+    hash = Math.imul(bitwise_xor_from_character, 3432918353);
+    hash = (hash << 13) | (hash >>> 19);
+  }
+  return () => {
+    // Return the hash that you can use as a seed
+    hash = Math.imul(hash ^ (hash >>> 16), 2246822507);
+    hash = Math.imul(hash ^ (hash >>> 13), 3266489909);
+    return (hash ^= hash >>> 16) >>> 0;
+  };
+}
+
+function SimpleFastCounter32(seed_1, seed_2, seed_3, seed_4) {
+  return () => {
+    seed_1 >>>= 0;
+    seed_2 >>>= 0;
+    seed_3 >>>= 0;
+    seed_4 >>>= 0;
+    let cast32 = (seed_1 + seed_2) | 0;
+    seed_1 = seed_2 ^ (seed_2 >>> 9);
+    seed_2 = (seed_3 + (seed_3 << 3)) | 0;
+    seed_3 = (seed_3 << 21) | (seed_3 >>> 11);
+    seed_4 = (seed_4 + 1) | 0;
+    cast32 = (cast32 + seed_4) | 0;
+    seed_3 = (seed_3 + cast32) | 0;
+    return (cast32 >>> 0) / 4294967296;
+  };
+}
+// }
+function getRandomBySeed(seed) {
+  return SimpleFastCounter32(MurmurHash3(seed)())();
+}
+
+function getRandomColorBySeed(seed, colorNumber) {
+  const channels = ["r", "g", "b"].map((channel) =>
+    Math.min(
+      Math.floor(
+        getRandomBySeed(
+          `${channel}${colorNumber ? `-${colorNumber} ` : ""}${seed}`
+        ) * 256
+      ),
+      255
+    )
+  );
+
+  return `rgb(${channels.join(",")})`;
+}
+
+// not mine
+Decimal.prototype.softcap = function (start, power, mode, dis = false) {
+  var x = this;
+  if (!dis && x.gte(start)) {
+    if ([0, "pow"].includes(mode))
+      x = x.div(start).max(1).pow(power).mul(start);
+    if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start);
+    if ([2, "exp"].includes(mode)) x = expPow(x.div(start), power).mul(start);
+    if ([3, "log"].includes(mode))
+      x = x.div(start).log(power).add(1).mul(start);
+  }
+  return x;
+};
+
+// not mine
+/* Decimal.prototype.overflow = function (start, power, meta = 1) {
+  let number = this;
+  if (isNaN(number.mag)) return new Decimal(0);
+  start = Decimal.iteratedexp(10, meta - 1, 1.0001).max(start);
+  if (number.gte(start)) {
+    let s = start.iteratedlog(10, meta);
+    number = Decimal.iteratedexp(
+      10,
+      meta,
+      number.iteratedlog(10, meta).div(s).pow(power).mul(s)
+    );
+  }
+  return number;
+}; */
+
+function msToTime(s) {
+  var ms = s % 1000;
+  s = (s - ms) / 1000;
+  var secs = s % 60;
+  s = (s - secs) / 60;
+  var mins = s % 60;
+  var hrs = (s - mins) / 60;
+
+  return (
+    (hrs ? hrs + "h. " : "") + (hrs || mins ? mins + "m. " : "") + secs + "s. "
+  );
+}
+
+let textFile = null,
+  makeTextFile = function (text) {
+    var data = new Blob([text], { type: "text/plain" });
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+
+    return textFile;
+  },
+  downloadFile = function (text, filename) {
+    const link = document.createElement("a");
+
+    link.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    );
+    link.setAttribute("download", filename || "data.json");
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+    link.remove();
+  };
